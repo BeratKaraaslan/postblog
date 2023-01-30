@@ -43,3 +43,10 @@ export class UpdatePostDto {
     @IsString()
     imageUrl?: string;
 }
+
+const cpdto: CreatePostDto = {
+    "title": "",
+    "description": "",
+    "body": "",
+    "imageUrl": ""
+}

@@ -1,6 +1,6 @@
 import { Controller, Get, HttpStatus, ParseIntPipe } from '@nestjs/common';
 import { Body, Delete, HttpCode, Param, Patch, Post, UseGuards } from '@nestjs/common/decorators';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { JwtGuard } from 'src/core/auth/guard';
 import { GetUser } from 'src/routes/auth/controllers/get-user.decorator';
@@ -17,24 +17,25 @@ export class PostController {
         private postService: PostService,
     ) { }
 
-
     @Get('/')
     async getPosts(@GetUser() user: User) {
         return this.postService.getPosts(user.id);
     }
 
 
-    @Get('/byId')
+    @Get('/:postId')
     async getById(
         @GetUser() user: User,
-        @Param('id', ParseIntPipe) postId: number,
+        @Param('postId', ParseIntPipe) postId: number,
     ) {
+        console.log(user.id, postId)
         return this.postService.getById(user.id, postId);
     }
 
 
     @Post('/create')
     async create(@GetUser() user: User, @Body() body: CreatePostDto) {
+        console.log("okey")
         return this.postService.create(user.id, body);
     }
 

@@ -9,8 +9,11 @@ export class PostService {
 
     async getPosts(userId: number) {
 
-        const sql = `select * from posts where userId=$1`
-        const result = this.prisma.$queryRawUnsafe<any[]>(sql, userId)
+        const result = this.prisma.post.findMany({
+            where: {
+                userId: userId
+            }
+        })
 
         return result
     }
@@ -18,8 +21,12 @@ export class PostService {
 
     async getById(userId: number, postId: number) {
 
-        const sql = `select * from posts where userId=$1 and id=$2`
-        const result = this.prisma.$queryRawUnsafe<any[]>(sql, userId, postId)
+        const result = this.prisma.post.findFirst({
+            where: {
+                id: postId,
+                userId: userId
+            }
+        })
 
         return result
     }
@@ -28,8 +35,11 @@ export class PostService {
     async create(userId: number, body: CreatePostDto) {
         const post = await this.prisma.post.create({
             data: {
-                userId,
-                ...body,
+                userId: userId,
+                title: body.title,
+                description: body.description,
+                body: body.body,
+                imageUrl: body.imageUrl
             },
         });
         return post;
@@ -70,7 +80,7 @@ export class PostService {
             )
         };
 
-        const deletePost = await this.prisma.delete({
+        const deletePost = await this.prisma.post.delete({
             where: {
                 id: postId,
             },

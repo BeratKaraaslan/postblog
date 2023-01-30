@@ -1,20 +1,38 @@
 version: "2.4"
 services:
+  backend:
+    build: ./
   dev-db:
     container_name: "dev-db"
-    image: "postgres:15"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=awO4Bqkqna
+      - POSTGRES_DB=nest-docker
+      - JWT_SECRET="super-secret"
+      - DATABASE_URL="postgresql://postgres:awO4Bqkqna@postgres_db:5432/nest-docker?schema=public"
+      - PORT=3600
+
+    depends_on:
+      - database
+  database:
+    image: postgres:15
+    container_name: postgres_db
     ports:
       - 5434:5432
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=awO4Bqkqna
-      - POSTGRES_DB=nest-docker
-  test-db:
-    container_name: "test-db"
-    image: "postgres:15"
-    ports:
-      - 5435:5432
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=awO4Bqkqna
-      - POSTGRES_DB=nest-docker
+    volumes:
+      - postgres-volumes:/data/db
+    networks:
+      - nests_network
+      
+networks:
+  nestjs_network:
+    driver: bridge
+  # test-db:
+  #   container_name: "test-db"
+  #   image: "postgres:15"
+  #   ports:
+  #     - 5435:5432
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=awO4Bqkqna
+  #     - POSTGRES_DB=nest-docker

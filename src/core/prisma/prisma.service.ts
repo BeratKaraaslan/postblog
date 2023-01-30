@@ -1,26 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist';
 import { PrismaClient } from '@prisma/client'
 
 @Injectable()
-export class PrismaService extends PrismaClient {
-    delete(arg0: {}) {
-        throw new Error('Method not implemented.');
-    }
-    constructor(config: ConfigService) {
-        super({
-            datasources: {
-                db: {
-                    url:  config.get('DATABASE_URL')
-                },
-            },
-        });
+export class PrismaService extends PrismaClient
+    implements OnModuleInit, OnModuleDestroy {
+    async onModuleInit() {
+        await this.$connect();
     }
 
-    cleanDb() {
-        return this.$transaction([
-            this.bookmark.deleteMany(),
-            this.user.deleteMany()
-        ]);
+    async onModuleDestroy() {
+        await this.$disconnect();
     }
 }
